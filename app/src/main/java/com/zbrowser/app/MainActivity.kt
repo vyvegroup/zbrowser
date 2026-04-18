@@ -12,12 +12,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.zbrowser.app.storage.GitHubStorageManager
 import com.zbrowser.app.web.TabWebView
 import com.zbrowser.app.web.WebViewManager
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    val webViewManager by lazy { WebViewManager(this) }
+    val webViewManager by lazy { WebViewManager(applicationContext) }
+
+    private val githubStorage by lazy { GitHubStorageManager.getInstance(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,10 +76,12 @@ class MainActivity : AppCompatActivity() {
 
     fun handleDownload(request: TabWebView.DownloadRequest) {
         try {
+            val fileName = android.webkit.URLUtil.guessFileName(
+                request.url, request.contentDisposition, request.mimetype
+            )
+
+            // Save locally via DownloadManager
             val dmRequest = DownloadManager.Request(Uri.parse(request.url)).apply {
-                val fileName = android.webkit.URLUtil.guessFileName(
-                    request.url, request.contentDisposition, request.mimetype
-                )
                 setTitle(fileName)
                 setDescription("Downloading $fileName")
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -86,6 +93,20 @@ class MainActivity : AppCompatActivity() {
             val dm = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             dm.enqueue(dmRequest)
             Toast.makeText(this, R.string.download_started, Toast.LENGTH_SHORT).show()
+
+            // Also upload to GitHub if enabled
+            if (githubStorage.isEnabled && githubStorage.isConfigured && githubStorage.autoUpload) {
+                val cookies = CookieManager.getInstance().getCookie(request.url)
+                lifecycleScope.launch {
+                    githubStorage.uploadFromUrl(
+                        fileUrl = request.url,
+                        fileName = fileName,
+                        userAgent = request.userAgent,
+                        cookies = cookies,
+                        subFolder = "downloads"
+                    )
+                }
+            }
         } catch (e: Exception) {
             Toast.makeText(this, R.string.download_failed, Toast.LENGTH_SHORT).show()
         }
