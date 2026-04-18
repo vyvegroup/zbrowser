@@ -37,89 +37,42 @@ jobs:
         run: |
           echo "$KEYSTORE_BASE64" | base64 --decode > app/release.keystore
 
-      - name: Build Unsigned Release APK
+      - name: Build Signed Release APK
+        env:
+          KEYSTORE_PATH: app/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: gradle assembleRelease
 
       - name: Find APK
         id: find_apk
         run: |
           APK_PATH=$(find app/build/outputs/apk/release/ -name "*.apk" -type f | head -1)
-          APK_NAME=$(basename "$APK_PATH")
           echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
-          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
           echo "Found APK: $APK_PATH"
-
-      - name: Zipalign APK
-        run: |
-          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
-          echo "Using build tools: $BUILD_TOOLS"
-          "$BUILD_TOOLS/zipalign" -f 4 "${{ steps.find_apk.outputs.apk_path }}" aligned.apk
-          echo "Zipaligned APK created"
-
-      - name: Step 1 - Sign with jarsigner (v1 JAR signing)
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          echo "Step 1: Signing with jarsigner for v1 (JAR signing)..."
-          jarsigner \
-            -verbose \
-            -sigalg SHA256withRSA \
-            -digestalg SHA-256 \
-            -keystore app/release.keystore \
-            -storepass "$KEYSTORE_PASSWORD" \
-            -keypass "$KEY_PASSWORD" \
-            -signedjar v1-signed.apk \
-            aligned.apk \
-            "$KEY_ALIAS"
-          echo "v1 JAR signing completed"
-          echo "Verifying v1 signature..."
-          jarsigner -verify v1-signed.apk
-
-      - name: Step 2 - Sign with apksigner (v1 + v2 + v3)
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
-          APKSIGNER="$BUILD_TOOLS/apksigner"
-          
-          echo "Step 2: Signing with apksigner for v1 + v2 + v3..."
-          "$APKSIGNER" sign \
-            --ks app/release.keystore \
-            --ks-pass "pass:$KEYSTORE_PASSWORD" \
-            --ks-key-alias "$KEY_ALIAS" \
-            --key-pass "pass:$KEY_PASSWORD" \
-            --v1-signing-enabled true \
-            --v2-signing-enabled true \
-            --v3-signing-enabled true \
-            --v4-signing-enabled false \
-            --out signed.apk \
-            v1-signed.apk
 
       - name: Verify APK signature
         run: |
           BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
-          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs signed.apk
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "${{ steps.find_apk.outputs.apk_path }}"
 
       - name: Generate SHA-256 checksum
         run: |
-          sha256sum signed.apk > signed.apk.sha256
+          sha256sum "${{ steps.find_apk.outputs.apk_path }}" > app-release.apk.sha256
           echo "SHA-256 checksum:"
-          cat signed.apk.sha256
+          cat app-release.apk.sha256
           echo ""
           echo "APK file size:"
-          ls -lh signed.apk
+          ls -lh "${{ steps.find_apk.outputs.apk_path }}"
 
       - name: Upload Signed APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: signed-release-apk
           path: |
-            signed.apk
-            signed.apk.sha256
+            ${{ steps.find_apk.outputs.apk_path }}
+            app-release.apk.sha256
           retention-days: 90
 
       - name: Create GitHub Release
@@ -151,7 +104,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            signed.apk
-            signed.apk.sha256
+            ${{ steps.find_apk.outputs.apk_path }}
+            app-release.apk.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
