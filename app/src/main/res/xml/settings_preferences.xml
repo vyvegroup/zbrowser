@@ -63,6 +63,45 @@
 
     </PreferenceCategory>
 
+    <!-- GitHub Storage Section -->
+    <PreferenceCategory
+        app:title="Storage by GitHub"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:key="github_storage_enabled"
+            app:title="Enable GitHub Storage"
+            app:summary="Save downloaded files to a private GitHub repository"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="github_pat"
+            app:title="GitHub Personal Access Token"
+            app:summary="Not configured"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="github_repo_name"
+            app:title="Repository Name"
+            app:summary="zbrowser-storage"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            app:key="github_auto_upload"
+            app:title="Auto-upload Downloads"
+            app:summary="Automatically upload all downloads to GitHub"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="github_test_connection"
+            app:title="Test Connection"
+            app:summary="Verify your GitHub token and create repository"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory
         app:title="@string/settings_advanced"
         app:iconSpaceReserved="false">
