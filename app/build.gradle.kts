@@ -27,25 +27,29 @@ android {
 
     signingConfigs {
         create("release") {
-            // CI: read from environment variables
-            val storeFilePath = System.getenv("KEYSTORE_PATH") ?: ""
-            val storePasswordEnv = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            val keyAliasEnv = System.getenv("KEY_ALIAS") ?: ""
-            val keyPasswordEnv = System.getenv("KEY_PASSWORD") ?: ""
+            // Check for noSigning flag
+            val noSigning = project.hasProperty("noSigning")
+            if (!noSigning) {
+                // CI: read from environment variables
+                val storeFilePath = System.getenv("KEYSTORE_PATH") ?: ""
+                val storePasswordEnv = System.getenv("KEYSTORE_PASSWORD") ?: ""
+                val keyAliasEnv = System.getenv("KEY_ALIAS") ?: ""
+                val keyPasswordEnv = System.getenv("KEY_PASSWORD") ?: ""
 
-            // Local: read from keystore.properties
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            val localProps = Properties()
-            if (keystorePropertiesFile.exists()) {
-                localProps.load(FileInputStream(keystorePropertiesFile))
+                // Local: read from keystore.properties
+                val keystorePropertiesFile = rootProject.file("keystore.properties")
+                val localProps = Properties()
+                if (keystorePropertiesFile.exists()) {
+                    localProps.load(FileInputStream(keystorePropertiesFile))
+                }
+
+                storeFile = if (storeFilePath.isNotEmpty()) rootProject.file(storeFilePath)
+                            else if (localProps.containsKey("storeFile")) rootProject.file(localProps.getProperty("storeFile"))
+                            else rootProject.file("app/release.keystore")
+                storePassword = storePasswordEnv.ifEmpty { localProps.getProperty("storePassword") ?: "" }
+                keyAlias = keyAliasEnv.ifEmpty { localProps.getProperty("keyAlias") ?: "" }
+                keyPassword = keyPasswordEnv.ifEmpty { localProps.getProperty("keyPassword") ?: "" }
             }
-
-            storeFile = if (storeFilePath.isNotEmpty()) rootProject.file(storeFilePath)
-                        else if (localProps.containsKey("storeFile")) rootProject.file(localProps.getProperty("storeFile"))
-                        else rootProject.file("app/release.keystore")
-            storePassword = storePasswordEnv.ifEmpty { localProps.getProperty("storePassword") ?: "" }
-            keyAlias = keyAliasEnv.ifEmpty { localProps.getProperty("keyAlias") ?: "" }
-            keyPassword = keyPasswordEnv.ifEmpty { localProps.getProperty("keyPassword") ?: "" }
         }
     }
 
@@ -59,7 +63,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            // Only use signingConfig when not in noSigning mode
+            if (!project.hasProperty("noSigning")) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
