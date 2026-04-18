@@ -221,7 +221,7 @@ class BrowserFragment : Fragment() {
             val btn = com.google.android.material.button.MaterialButton(context).apply {
                 this.text = text
                 icon = if (iconRes != 0) resources.getDrawable(iconRes, null) else null
-                iconGravity = com.google.android.material.button.MaterialButton ICON_GRAVITY_TEXT_START
+                iconGravity = com.google.android.material.button.MaterialButton.ICON_GRAVITY_TEXT_START
                 iconPadding = 16
                 setPadding(0, 12, 0, 12)
                 textSize = 14f
