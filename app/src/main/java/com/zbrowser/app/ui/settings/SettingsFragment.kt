@@ -102,7 +102,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val inputLayout = TextInputLayout(context).apply {
             hint = "GitHub Personal Access Token"
-            isPasswordVisibleToggleEnabled = false
+            endIconMode = TextInputLayout.END_ICON_NONE
         }
 
         val editText = TextInputEditText(inputLayout.context).apply {
