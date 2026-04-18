@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_new_tab"
+        android:title="@string/menu_new_tab"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_incognito"
+        android:title="@string/menu_incognito"
+        android:icon="@drawable/ic_incognito"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_refresh"
+        android:title="@string/menu_refresh"
+        android:icon="@drawable/ic_refresh"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_find"
+        android:title="@string/menu_find"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_desktop"
+        android:title="@string/menu_desktop"
+        android:checkable="true"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/menu_share"
+        android:icon="@drawable/ic_share"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_downloads"
+        android:title="@string/menu_downloads"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/menu_settings"
+        android:icon="@drawable/ic_settings"
+        app:showAsAction="never" />
+
+</menu>

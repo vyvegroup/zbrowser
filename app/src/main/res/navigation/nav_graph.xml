@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/browserFragment">
+
+    <fragment
+        android:id="@+id/browserFragment"
+        android:name="com.zbrowser.app.ui.browser.BrowserFragment"
+        android:label="Browser" />
+
+    <fragment
+        android:id="@+id/tabsFragment"
+        android:name="com.zbrowser.app.ui.tabs.TabsFragment"
+        android:label="@string/nav_tabs" />
+
+    <fragment
+        android:id="@+id/bookmarksFragment"
+        android:name="com.zbrowser.app.ui.bookmarks.BookmarksFragment"
+        android:label="@string/nav_bookmarks" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.zbrowser.app.ui.history.HistoryFragment"
+        android:label="@string/nav_history" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.zbrowser.app.ui.settings.SettingsFragment"
+        android:label="@string/nav_settings" />
+
+</navigation>

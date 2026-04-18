@@ -1,0 +1,142 @@
+name: Build & Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-sign:
+    name: Build, Sign & Release APK
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.5'
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > app/release.keystore
+
+      - name: Build Release APK
+        env:
+          KEYSTORE_PATH: app/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: gradle assembleRelease
+
+      - name: Find APK
+        id: find_apk
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/release/ -name "*.apk" -type f | head -1)
+          APK_NAME=$(basename "$APK_PATH")
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          echo "apk_name=$APK_NAME" >> $GITHUB_OUTPUT
+          echo "Found APK: $APK_PATH"
+
+      - name: Zipalign APK
+        run: |
+          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
+          echo "Using build tools: $BUILD_TOOLS"
+          "$BUILD_TOOLS/zipalign" -f 4 "${{ steps.find_apk.outputs.apk_path }}" aligned.apk
+          echo "Zipaligned APK created"
+
+      - name: Sign APK with v1 + v2 + v3
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
+          APKSIGNER="$BUILD_TOOLS/apksigner"
+          
+          echo "Signing with apksigner (v1 + v2 + v3)..."
+          "$APKSIGNER" sign \
+            --ks app/release.keystore \
+            --ks-pass "pass:$KEYSTORE_PASSWORD" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --key-pass "pass:$KEY_PASSWORD" \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --v4-signing-enabled false \
+            --out signed.apk \
+            aligned.apk
+
+      - name: Verify APK signature
+        run: |
+          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs signed.apk
+
+      - name: Generate SHA-256 checksum
+        run: |
+          sha256sum signed.apk > signed.apk.sha256
+          echo "SHA-256 checksum:"
+          cat signed.apk.sha256
+          echo ""
+          echo "APK file size:"
+          ls -lh signed.apk
+
+      - name: Upload Signed APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-release-apk
+          path: |
+            signed.apk
+            signed.apk.sha256
+          retention-days: 90
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ZBrowser ${{ github.ref_name }}
+          body: |
+            ## ZBrowser Release ${{ github.ref_name }}
+
+            ### Features
+            - Chromium WebView-based browser
+            - Material Design 3 UI with dark mode
+            - Multi-tab browsing and Incognito mode
+            - Bookmarks and History management
+            - Find in page and Desktop mode
+            - Download manager and Share
+
+            ### Installation
+            1. Download the APK file below
+            2. Enable "Install from unknown sources" in your device settings
+            3. Install the APK
+
+            ### APK Signature
+            - Signed with v1 (JAR) + v2 (APK Signature Scheme v2) + v3 (APK Signature Scheme v3)
+            - SHA-256 checksum file included for verification
+
+            **Minimum Android Version:** Android 8.0 (API 26)
+          draft: false
+          prerelease: false
+          files: |
+            signed.apk
+            signed.apk.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

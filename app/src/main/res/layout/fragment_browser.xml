@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/browser_coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <!-- Top toolbar with URL bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/spacing_sm"
+            android:paddingVertical="@dimen/spacing_xs">
+
+            <!-- Back button -->
+            <ImageButton
+                android:id="@+id/btn_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_back"
+                android:contentDescription="@string/content_desc_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface" />
+
+            <!-- Forward button -->
+            <ImageButton
+                android:id="@+id/btn_forward"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_forward"
+                android:contentDescription="@string/content_desc_forward"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface" />
+
+            <!-- URL/Search bar -->
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/search_bar"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/search_bar_height"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="@dimen/spacing_xs"
+                android:hint="@string/search_hint"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp" />
+
+            <!-- Bookmark button -->
+            <ImageButton
+                android:id="@+id/btn_bookmark"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_bookmark_border"
+                android:contentDescription="@string/content_desc_bookmark"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface" />
+
+            <!-- Menu button -->
+            <ImageButton
+                android:id="@+id/btn_menu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_more_vert"
+                android:contentDescription="@string/content_desc_menu"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="?attr/colorOnSurface" />
+
+        </LinearLayout>
+
+        <!-- Progress bar -->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="@style/Widget.Material3.LinearProgressIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:indeterminate="false"
+            android:max="100"
+            android:visibility="gone"
+            app:indicatorColor="?attr/colorPrimary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- WebView container with swipe refresh -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:id="@+id/webview_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Find in page bar -->
+    <LinearLayout
+        android:id="@+id/find_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingVertical="@dimen/spacing_sm"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/find_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/find_in_page"
+            android:inputType="text"
+            android:background="@android:color/transparent"
+            android:singleLine="true"
+            android:imeOptions="actionSearch" />
+
+        <TextView
+            android:id="@+id/find_result_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_matches"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            android:layout_marginHorizontal="@dimen/spacing_sm" />
+
+        <ImageButton
+            android:id="@+id/btn_find_prev"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_keyboard_arrow_up"
+            android:contentDescription="@string/find_previous"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btn_find_next"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_keyboard_arrow_down"
+            android:contentDescription="@string/find_next"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btn_find_close"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_close"
+            android:contentDescription="@string/find_close"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+    </LinearLayout>
+
+    <!-- Bottom navigation bar -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/spacing_lg">
+
+        <ImageButton
+            android:id="@+id/btn_bottom_home"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_home"
+            android:contentDescription="@string/content_desc_home"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btn_bottom_tabs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_tab"
+            android:contentDescription="@string/content_desc_tabs"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btn_bottom_bookmarks"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_bookmark_border"
+            android:contentDescription="@string/nav_bookmarks"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btn_bottom_history"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_history"
+            android:contentDescription="@string/nav_history"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/btn_bottom_settings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_settings"
+            android:contentDescription="@string/nav_settings"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="?attr/colorOnSurface" />
+
+    </LinearLayout>
+
+    <!-- Search view overlay -->
+    <com.google.android.material.search.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/search_hint"
+        app:layout_anchor="@id/search_bar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Quick Links"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:layout_marginBottom="@dimen/spacing_md" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/quick_links_chips"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="@dimen/spacing_sm"
+                app:chipSpacingVertical="@dimen/spacing_sm">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_google"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Google"
+                    app:chipIcon="@drawable/ic_search" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_youtube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="YouTube" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_github"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GitHub" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_wikipedia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wikipedia" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+        </LinearLayout>
+
+    </com.google.android.material.search.SearchView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

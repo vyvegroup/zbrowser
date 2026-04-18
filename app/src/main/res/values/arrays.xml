@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="theme_entries">
+        <item>@string/settings_theme_system</item>
+        <item>@string/settings_theme_light</item>
+        <item>@string/settings_theme_dark</item>
+    </string-array>
+
+    <string-array name="theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+
+    <string-array name="search_engine_entries">
+        <item>@string/search_google</item>
+        <item>@string/search_bing</item>
+        <item>@string/search_duckduckgo</item>
+        <item>@string/search_yahoo</item>
+    </string-array>
+
+    <string-array name="search_engine_values">
+        <item>google</item>
+        <item>bing</item>
+        <item>duckduckgo</item>
+        <item>yahoo</item>
+    </string-array>
+</resources>
