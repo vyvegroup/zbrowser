@@ -59,9 +59,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            // Signing is done by apksigner in CI for v1+v2+v3 support
-            // For local builds with keystore.properties, uncomment the next line:
-            // signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
