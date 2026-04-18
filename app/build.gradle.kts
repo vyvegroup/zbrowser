@@ -46,6 +46,10 @@ android {
             storePassword = storePasswordEnv.ifEmpty { localProps.getProperty("storePassword") ?: "" }
             keyAlias = keyAliasEnv.ifEmpty { localProps.getProperty("keyAlias") ?: "" }
             keyPassword = keyPasswordEnv.ifEmpty { localProps.getProperty("keyPassword") ?: "" }
+
+            // Enable v1 (JAR) and v2 (APK Signature Scheme v2) signing explicitly
+            isV1SigningEnabled = true
+            isV2SigningEnabled = true
         }
     }
 
