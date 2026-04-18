@@ -73,7 +73,7 @@ class BrowserFragment : Fragment() {
     private fun setupViews() {
         binding.searchView.setupWithSearchBar(binding.searchBar)
         binding.swipeRefresh.setColorSchemeResources(
-            com.google.android.material.R.color.material_dynamic_primary60
+            R.color.md_theme_light_primary
         )
     }
 

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    val webViewManager by lazy { WebViewManager(applicationContext) }
+    val webViewManager by lazy { WebViewManager(this) }
 
     private val githubStorage by lazy { GitHubStorageManager.getInstance(this) }
 

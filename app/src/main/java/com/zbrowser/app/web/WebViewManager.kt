@@ -62,7 +62,7 @@ class WebViewManager(private val context: Context) {
     fun createTab(url: String? = null, isIncognito: Boolean = false): String {
         val tabId = UUID.randomUUID().toString()
         val webView = TabWebView(
-            context = context.applicationContext,
+            context = context,
             tabId = tabId,
             onPageStarted = { pageUrl ->
                 callbacks?.onPageStarted(tabId, pageUrl)

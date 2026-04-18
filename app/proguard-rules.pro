@@ -10,7 +10,7 @@
 -keep class com.zbrowser.app.storage.** { *; }
 
 # Room
--keep class * extends androidx.room.RoomDatabase
+-keep class * extends androidx.room.RoomDatabase { *; }
 -keep @androidx.room.Entity class *
 
 # Coroutines

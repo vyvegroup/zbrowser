@@ -23,7 +23,7 @@ class TabWebView(
     private val onRequestNewTab: (String) -> Unit = {},
     private val onDownloadRequested: (DownloadRequest) -> Unit = {},
     private val onLongPressHit: (WebViewManager.HitResult) -> Unit = {}
-) : WebView(context.applicationContext) {
+) : WebView(context) {
 
     var currentUrl: String = "about:blank"
         private set
