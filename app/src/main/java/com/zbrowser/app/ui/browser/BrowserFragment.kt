@@ -227,7 +227,7 @@ class BrowserFragment : Fragment() {
                 textSize = 14f
                 elevation = 0f
                 stateListAnimator = null
-                cornerRadius = 16f
+                cornerRadius = 16
                 setOnClickListener {
                     dialog.dismiss()
                     onClick()
