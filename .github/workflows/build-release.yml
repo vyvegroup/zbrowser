@@ -75,6 +75,7 @@ jobs:
             --v2-signing-enabled true \
             --v3-signing-enabled true \
             --v4-signing-enabled false \
+            --min-sdk-version 26 \
             --out signed.apk \
             aligned.apk
 
