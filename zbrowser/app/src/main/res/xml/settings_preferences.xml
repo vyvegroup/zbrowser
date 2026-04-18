@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:title="@string/settings_general"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            app:key="search_engine"
+            app:title="@string/settings_search_engine"
+            app:summary="Google"
+            app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+            app:key="homepage"
+            app:title="@string/settings_homepage"
+            app:defaultValue="https://www.google.com"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_appearance"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            app:key="theme"
+            app:title="@string/settings_theme"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:defaultValue="system"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_privacy"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:key="block_ads"
+            app:title="@string/settings_block_ads"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            app:key="do_not_track"
+            app:title="@string/settings_do_not_track"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            app:key="save_passwords"
+            app:title="@string/settings_save_passwords"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="clear_browsing_data"
+            app:title="@string/settings_clear_browsing_data"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <!-- GitHub Storage Section -->
+    <PreferenceCategory
+        app:title="Storage by GitHub"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:key="github_storage_enabled"
+            app:title="Enable GitHub Storage"
+            app:summary="Save downloaded files to a private GitHub repository"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="github_pat"
+            app:title="GitHub Personal Access Token"
+            app:summary="Not configured"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="github_repo_name"
+            app:title="Repository Name"
+            app:summary="zbrowser-storage"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            app:key="github_auto_upload"
+            app:title="Auto-upload Downloads"
+            app:summary="Automatically upload all downloads to GitHub"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="github_test_connection"
+            app:title="Test Connection"
+            app:summary="Verify your GitHub token and create repository"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_advanced"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:key="javascript"
+            app:title="@string/settings_javascript"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            app:key="cookies"
+            app:title="@string/settings_cookies"
+            app:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            app:key="location"
+            app:title="@string/settings_location"
+            app:defaultValue="false"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="@string/settings_about"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            app:key="about_version"
+            app:title="@string/settings_version"
+            app:summary="1.0.0"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            app:key="open_source"
+            app:title="@string/settings_open_source"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

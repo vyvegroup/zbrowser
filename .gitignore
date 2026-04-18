@@ -1,0 +1,27 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Keystore files (NEVER commit these!)
+*.keystore
+*.jks
+keystore.properties
+keystore_base64.txt
+
+# Build outputs
+/app/build
+/build
+
+# APK files
+*.apk
+*.aab
+
+# OS files
+Thumbs.db
