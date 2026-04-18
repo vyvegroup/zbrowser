@@ -2,16 +2,11 @@ package com.zbrowser.app.web
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Parcelable
 import android.webkit.WebView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.UUID
 
-/**
- * Manages multiple browser tabs, each with its own WebView instance.
- * Handles tab creation, switching, closing, and state persistence.
- */
 class WebViewManager(private val context: Context) {
 
     data class TabInfo(
@@ -21,6 +16,35 @@ class WebViewManager(private val context: Context) {
         val isIncognito: Boolean = false,
         val favicon: android.graphics.Bitmap? = null
     )
+
+    // Callbacks interface for tab events
+    interface TabCallbacks {
+        fun onPageStarted(tabId: String, url: String) {}
+        fun onPageFinished(tabId: String, url: String) {}
+        fun onProgressChanged(tabId: String, progress: Int) {}
+        fun onTitleReceived(tabId: String, title: String) {}
+        fun onIconReceived(tabId: String, icon: android.graphics.Bitmap?) {}
+        fun onRequestNewTab(url: String): String = ""
+        fun onDownloadRequested(tabId: String, request: TabWebView.DownloadRequest) {}
+        fun onLongPressHit(tabId: String, hitResult: HitResult) {}
+    }
+
+    data class HitResult(
+        val type: Int,
+        val url: String?,
+        val src: String?,
+        val title: String?,
+        val alt: String?
+    ) {
+        companion object {
+            const val TYPE_UNKNOWN = 0
+            const val TYPE_LINK = 1
+            const val TYPE_IMAGE = 2
+            const val TYPE_IMAGE_LINK = 3
+            const val TYPE_SRC_ANCHOR = 4
+            const val TYPE_SRC_IMAGE_ANCHOR = 5
+        }
+    }
 
     private val _tabs = MutableStateFlow<Map<String, TabWebView>>(emptyMap())
     val tabs: StateFlow<Map<String, TabWebView>> = _tabs
@@ -33,31 +57,36 @@ class WebViewManager(private val context: Context) {
 
     private val tabStateBundles = mutableMapOf<String, Bundle>()
 
+    var callbacks: TabCallbacks? = null
+
     fun createTab(url: String? = null, isIncognito: Boolean = false): String {
         val tabId = UUID.randomUUID().toString()
         val webView = TabWebView(
-            context = context,
+            context = context.applicationContext,
             tabId = tabId,
-            onPageStarted = { _ ->
-                // Handled by observer
+            onPageStarted = { pageUrl ->
+                callbacks?.onPageStarted(tabId, pageUrl)
             },
-            onPageFinished = { _ ->
-                // Handled by observer
+            onPageFinished = { pageUrl ->
+                callbacks?.onPageFinished(tabId, pageUrl)
             },
-            onProgressChanged = { _ ->
-                // Handled by observer
+            onProgressChanged = { progress ->
+                callbacks?.onProgressChanged(tabId, progress)
             },
-            onTitleReceived = { _ ->
-                // Handled by observer
+            onTitleReceived = { title ->
+                callbacks?.onTitleReceived(tabId, title)
             },
-            onIconReceived = { _ ->
-                // Handled by observer
+            onIconReceived = { icon ->
+                callbacks?.onIconReceived(tabId, icon)
             },
-            onRequestNewTab = { url ->
-                createTab(url)
+            onRequestNewTab = { newUrl ->
+                callbacks?.onRequestNewTab(newUrl) ?: createTab(newUrl)
             },
-            onDownloadRequested = { _ ->
-                // Handled by activity
+            onDownloadRequested = { request ->
+                callbacks?.onDownloadRequested(tabId, request)
+            },
+            onLongPressHit = { hitResult ->
+                callbacks?.onLongPressHit(tabId, hitResult)
             }
         )
 
