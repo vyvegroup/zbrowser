@@ -38,7 +38,7 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 --decode > app/release.keystore
 
       - name: Build Unsigned Release APK
-        run: gradle assembleRelease -PnoSigning
+        run: gradle assembleRelease
 
       - name: Find APK
         id: find_apk
