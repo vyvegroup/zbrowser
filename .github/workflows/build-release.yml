@@ -56,7 +56,26 @@ jobs:
           "$BUILD_TOOLS/zipalign" -f 4 "${{ steps.find_apk.outputs.apk_path }}" aligned.apk
           echo "Zipaligned APK created"
 
-      - name: Sign APK with v1 + v2 + v3
+      - name: Step 1 - Sign with jarsigner (v1 JAR signing)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "Step 1: Signing with jarsigner for v1 (JAR signing)..."
+          jarsigner \
+            -verbose \
+            -sigalg SHA256withRSA \
+            -digestalg SHA-256 \
+            -keystore app/release.keystore \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            -signedjar v1-signed.apk \
+            aligned.apk \
+            "$KEY_ALIAS"
+          echo "v1 JAR signing completed"
+
+      - name: Step 2 - Sign with apksigner (v2 + v3)
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -65,19 +84,18 @@ jobs:
           BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
           APKSIGNER="$BUILD_TOOLS/apksigner"
           
-          echo "Signing with apksigner (v1 + v2 + v3)..."
+          echo "Step 2: Signing with apksigner for v2 + v3..."
           "$APKSIGNER" sign \
             --ks app/release.keystore \
             --ks-pass "pass:$KEYSTORE_PASSWORD" \
             --ks-key-alias "$KEY_ALIAS" \
             --key-pass "pass:$KEY_PASSWORD" \
-            --v1-signing-enabled true \
+            --v1-signing-enabled false \
             --v2-signing-enabled true \
             --v3-signing-enabled true \
             --v4-signing-enabled false \
-            --min-sdk-version 1 \
             --out signed.apk \
-            aligned.apk
+            v1-signed.apk
 
       - name: Verify APK signature
         run: |
