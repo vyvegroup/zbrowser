@@ -74,8 +74,10 @@ jobs:
             aligned.apk \
             "$KEY_ALIAS"
           echo "v1 JAR signing completed"
+          echo "Verifying v1 signature..."
+          jarsigner -verify v1-signed.apk
 
-      - name: Step 2 - Sign with apksigner (v2 + v3)
+      - name: Step 2 - Sign with apksigner (v1 + v2 + v3)
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -84,13 +86,13 @@ jobs:
           BUILD_TOOLS=$(find $ANDROID_HOME/build-tools -maxdepth 1 -type d | sort -V | tail -1)
           APKSIGNER="$BUILD_TOOLS/apksigner"
           
-          echo "Step 2: Signing with apksigner for v2 + v3..."
+          echo "Step 2: Signing with apksigner for v1 + v2 + v3..."
           "$APKSIGNER" sign \
             --ks app/release.keystore \
             --ks-pass "pass:$KEYSTORE_PASSWORD" \
             --ks-key-alias "$KEY_ALIAS" \
             --key-pass "pass:$KEY_PASSWORD" \
-            --v1-signing-enabled false \
+            --v1-signing-enabled true \
             --v2-signing-enabled true \
             --v3-signing-enabled true \
             --v4-signing-enabled false \
